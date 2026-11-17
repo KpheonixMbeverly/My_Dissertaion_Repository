@@ -8,9 +8,13 @@ the factor-only model is stored, together with the Diebold-Mariano p-value.
     python scripts/01_monte_carlo.py --reps 2 --jobs 2           # small trial run
     python scripts/01_monte_carlo.py --reps 100 --jobs 6         # full study (hours)
     python scripts/01_monte_carlo.py --summarise                 # tables from saved runs
+    python scripts/01_monte_carlo.py --rho_f 0.9 --rho_u 0.8 --rho_y 0.5 --reps 3 --jobs 4
 
-Results are appended to results/montecarlo/replications.csv after every replication,
-so an interrupted run can be restarted and finished replications are skipped.
+Persistence of the simulated series is set with --rho_f (factors), --rho_u (idiosyncratic
+components) and --rho_y (target's own persistence). Each setting is stored in its own
+folder results/montecarlo/<tag>/ (default tag built from the three values), so runs with
+different settings never mix. Results are appended after every replication; an interrupted
+run can be restarted and finished replications are skipped.
 """
 import argparse
 import itertools
@@ -29,19 +33,28 @@ from gar.evaluation import summary_table  # noqa: E402
 from gar.models import FactorAugmentedQR, FactorQR, HistoricalQuantile, SparseQR  # noqa: E402
 from gar.simulate import simulate  # noqa: E402
 
-OUT = os.path.join(ROOT, "results", "montecarlo")
+BASE = os.path.join(ROOT, "results", "montecarlo")
+OUT = BASE
 FILE = os.path.join(OUT, "replications.csv")
 TAUS = (0.1, 0.25, 0.5)
 
 
-def one_rep(world, alpha, tail, rep, t, p):
+def set_output(tag):
+    global OUT, FILE
+    OUT = os.path.join(BASE, tag) if tag else BASE
+    FILE = os.path.join(OUT, "replications.csv")
+
+
+def one_rep(world, alpha, tail, rep, t, p, rho=(0.5, 0.3, 0.0)):
     seed = 10000 * ["dense", "sparse", "mixed", "caseA"].index(world) + int(100 * alpha) * 37 + rep
-    y, x, truth = simulate(world, t=t, p=p, alpha=alpha, tail=tail, seed=seed)
+    y, x, truth = simulate(world, t=t, p=p, alpha=alpha, tail=tail, seed=seed,
+                           rho_f=rho[0], rho_u=rho[1], rho_y=rho[2])
     models = [HistoricalQuantile(), FactorQR(), SparseQR(), FactorAugmentedQR()]
     fc, sel, _ = rolling_forecast(y, x, models, horizons=(1,), taus=TAUS, window=120,
                                   verbose=False)
     tab = summary_table(fc, benchmark="FO-QR")
     tab["world"], tab["alpha"], tab["tail"], tab["rep"], tab["seed"] = world, alpha, tail, rep, seed
+    tab["rho_f"], tab["rho_u"], tab["rho_y"] = rho
     # selection: share of origins at which a true sparse signal is picked by FA-QR
     fa = sel[sel["model"] == "FA-QR"]
     n_or = fc["origin"].nunique()
@@ -91,9 +104,19 @@ def main():
     ap.add_argument("--jobs", type=int, default=1, help="parallel processes")
     ap.add_argument("--t", type=int, default=260)
     ap.add_argument("--p", type=int, default=100)
+    ap.add_argument("--rho_f", type=float, default=0.5, help="AR(1) of the factors")
+    ap.add_argument("--rho_u", type=float, default=0.3, help="AR(1) of the idiosyncratic parts")
+    ap.add_argument("--rho_y", type=float, default=0.0, help="own persistence of the target")
+    ap.add_argument("--tag", default=None, help="output sub-folder (default: from the rho values)")
     ap.add_argument("--summarise", action="store_true")
     a = ap.parse_args()
+    rho = (a.rho_f, a.rho_u, a.rho_y)
+    default = (0.5, 0.3, 0.0)
+    tag = a.tag if a.tag is not None else (
+        "" if rho == default else "rhof%g_rhou%g_rhoy%g" % rho)
+    set_output(tag)
     os.makedirs(OUT, exist_ok=True)
+    print("output folder:", OUT)
     if a.summarise:
         summarise()
         return
@@ -112,14 +135,15 @@ def main():
         from joblib import Parallel, delayed
         batch = max(a.jobs, 1)
         for i in range(0, len(todo), batch):
-            res = Parallel(n_jobs=a.jobs)(delayed(one_rep)(*k, a.t, a.p) for k in todo[i:i + batch])
+            res = Parallel(n_jobs=a.jobs)(delayed(one_rep)(*k, a.t, a.p, rho)
+                                          for k in todo[i:i + batch])
             for tab in res:
                 save(tab)
             print("finished %d/%d  (%.0f min)" % (min(i + batch, len(todo)), len(todo),
                                                   (time.time() - t0) / 60), flush=True)
     else:
         for i, k in enumerate(todo):
-            save(one_rep(*k, a.t, a.p))
+            save(one_rep(*k, a.t, a.p, rho))
             print("finished %d/%d %s  (%.0f min)" % (i + 1, len(todo), k,
                                                      (time.time() - t0) / 60), flush=True)
     summarise()

@@ -21,7 +21,7 @@ scripts/
 tests/              单元测试（含"不偷看未来"的测试）
 data/               数据说明（数据本身不进仓库）
 results/            运行结果（不进仓库，可由脚本重新生成）
-docs/               研究设计与分析协议
+docs/               研究设计、分析协议、蒙特卡洛初步结果
 ```
 
 ## 环境
@@ -66,7 +66,7 @@ python scripts/01_monte_carlo.py --summarise          # 汇总已有结果
 ## 进度
 
 - [x] 模型与评价代码、单元测试、冒烟测试
-- [x] 蒙特卡洛脚本
+- [x] 蒙特卡洛脚本；初步结果见 `docs/montecarlo_preliminary.md`
 - [ ] 数据整理脚本 → `data/processed/panel_monthly.csv`
 - [ ] 描述统计与分析协议
 - [ ] 真实数据样本外预测（2×2 设计 + AR-GARCH）

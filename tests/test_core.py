@@ -123,3 +123,12 @@ def test_solver_fallback(monkeypatch):
     monkeypatch.setattr(q, "linprog", flaky)
     b, _ = q.fit_qr(y, np.ones((101, 1)), 0.5)
     assert calls["n"] >= 3 and np.isclose(b[0], np.median(y), atol=1e-7)
+
+
+def test_simulated_persistence():
+    """rho_f, rho_u and rho_y produce series with roughly the requested autocorrelation."""
+    y, x, _ = simulate("dense", t=600, p=40, rho_f=0.9, rho_u=0.8, rho_y=0.5, seed=9)
+    ac = lambda v: np.corrcoef(v[1:], v[:-1])[0, 1]
+    assert np.median([ac(x.iloc[:, j].values) for j in range(40)]) > 0.75
+    y0, _, _ = simulate("dense", t=600, p=40, seed=9)
+    assert ac(y.dropna().values) > ac(y0.dropna().values) + 0.2

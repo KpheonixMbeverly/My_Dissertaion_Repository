@@ -2,7 +2,7 @@
 
 Panel:   X_t = B f_t + u_t (+ g_t c for the weak "case A" factor)
          f_t and u_t are stationary AR(1) processes with unit variance.
-Target:  y_{t+h} = mu + f_t'gamma + u_t'theta (+ g_t delta) + s_t * eps_{t+h}
+Target:  y_{t+h} = mu + rho_y * y_t + f_t'gamma + u_t'theta (+ g_t delta) + s_t * eps_{t+h}
          eps is standardised Student-t; the scale s_t can depend on a factor or on one
          specific indicator, so that the lower quantiles react more than the median.
 
@@ -12,6 +12,9 @@ Worlds (what the target loads on):
   mixed   both (the case the factor-augmented model is built for; "case B")
   caseA   a weak factor that loads on a small block of indicators and is missed by PCA
 Factor strength: loadings are scaled by p^((alpha-1)/2); alpha = 1 strong, alpha < 1 weak.
+Persistence: rho_f, rho_u (AR(1) coefficients of factors and idiosyncratic parts) and rho_y
+(own persistence of the target). Year-on-year Chinese series are highly persistent, so
+values around 0.9 are closer to the application than the defaults of Wang's simulations.
 """
 import numpy as np
 import pandas as pd
@@ -27,7 +30,7 @@ def _ar1(rng, t, k, rho, burn=100):
 
 def simulate(world="mixed", t=260, p=100, r=3, h=1, alpha=1.0, n_sparse=5,
              signal=0.6, tail="specific", tail_strength=0.4, df=3.0,
-             rho_f=0.5, rho_u=0.3, block=10, start="2005-01", seed=None):
+             rho_f=0.5, rho_u=0.3, rho_y=0.0, block=10, start="2005-01", seed=None):
     """Simulate one data set. Returns (y, X, truth).
 
     tail: "none" (pure location shift), "factor" (scale driven by the first factor) or
@@ -69,11 +72,19 @@ def simulate(world="mixed", t=260, p=100, r=3, h=1, alpha=1.0, n_sparse=5,
     eps = rng.standard_t(df, size=t) / np.sqrt(df / (df - 2.0))
 
     y = np.full(t, np.nan)
-    y[h:] = 2.0 + loc[:-h] + scale[:-h] * eps[h:]
+    shock = loc[:-h] + scale[:-h] * eps[h:]          # predictable part + noise, for y_h .. y_{T-1}
+    if rho_y == 0.0:
+        y[h:] = 2.0 + shock
+    else:
+        level = 2.0 / (1.0 - rho_y)                   # unconditional mean of the AR part
+        for s_ in range(h, t):
+            prev = y[s_ - h] if np.isfinite(y[s_ - h]) else level
+            y[s_] = 2.0 + rho_y * prev + shock[s_ - h]
 
     idx = pd.period_range(start=start, periods=t, freq="M").to_timestamp()
     names = ["x%03d" % (j + 1) for j in range(p)]
     truth = {"gamma": gamma, "theta": theta, "relevant": [names[j] for j in np.flatnonzero(theta)],
              "tail_indicator": None if tail_var is None else names[tail_var],
-             "world": world, "alpha": alpha, "h": h}
+             "world": world, "alpha": alpha, "h": h,
+             "rho_f": rho_f, "rho_u": rho_u, "rho_y": rho_y}
     return pd.Series(y, index=idx, name="y"), pd.DataFrame(x, index=idx, columns=names), truth
