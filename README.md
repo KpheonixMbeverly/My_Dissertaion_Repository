@@ -1,4 +1,74 @@
-# Is One Index Enough? 中国工业增长下行风险的因子与个别指标
+# Is One Index Enough? Common Factors, Specific Indicators and Downside Risk to Growth in China
+
+Undergraduate dissertation code (University of Nottingham Ningbo China). The question: when forecasting
+downside risk to Chinese industrial growth, do a few common factors use all the information in a large
+monthly panel, or do specific indicators add to them? The estimator is the factor-augmented sparse
+quantile regression of Yaping Wang (FA-QR: PCA factors unpenalised, l1 penalty on the idiosyncratic
+components), compared out of sample with a factor-only model (FO-QR), a sparse-only l1 quantile
+regression (SO-QR), the historical quantile and AR-GARCH, in a 2x2 design (real + external indicators
+vs. adding Chinese financial indicators; factors only vs. factors + specific indicators).
+
+**Status (2026-11-18).** Model code, rolling pseudo out-of-sample engine, evaluation (pinball loss,
+coverage, Diebold-Mariano) and a Monte Carlo study are written and tested (`python -m pytest`).
+The Chinese monthly panel is being assembled (CSMAR, PBoC, FRED); no results on real data yet.
+
+## Preliminary Monte Carlo results
+
+> **Preliminary.** 3-5 replications per design on a generic data-generating process; persistence
+> values are guesses, not calibrated to Chinese data. These results are meant for discussing the
+> design, not for the dissertation. Details (in Chinese): `docs/montecarlo_preliminary.md`.
+
+**Set-up.** T = 260 months, p = 100 indicators, 3 factors, 120-month rolling window (about 140
+out-of-sample forecasts), h = 1, tau = 0.10 / 0.25 / 0.50. Inside each window: standardisation, PCA,
+number of factors by the eigenvalue ratio (r_max = 8), penalty by blocked time-series cross-validation
+with a 12-month gap. Target = own lag (High setting only) + factor part + idiosyncratic part + Student-t(3) noise whose
+scale depends on one idiosyncratic component (so it matters for the tails only).
+Worlds: *dense* (factors only), *sparse* (5 idiosyncratic components), *mixed* (both), *case A*
+(a factor loading on a block of 10 indicators, missed by PCA). Factor loadings scaled by p^((alpha-1)/2),
+strong alpha = 1, weak alpha = 0.6. Two persistence settings: *Low* (AR(1) of factors 0.5,
+idiosyncratic 0.3, target 0) and *High* (0.9, 0.8, 0.5; closer to year-on-year Chinese series).
+
+**FA-QR relative to FO-QR**: mean pinball-loss ratio (below 1 = FA-QR better), and in brackets the
+share of replications in which a one-sided DM test at 10% says FA-QR is better (power where FA-QR
+should win, false rejections in the dense worlds).
+
+| World | Factors | Low: τ=0.10 | Low: τ=0.25 | Low: τ=0.50 | High: τ=0.10 | High: τ=0.25 | High: τ=0.50 |
+|---|---|---|---|---|---|---|---|
+| Dense | strong | 1.01 (0%) | 1.01 (0%) | 1.00 (0%) | 1.04 (0%) | 1.01 (0%) | 1.00 (0%) |
+| Dense | weak | 0.99 (20%) | 1.00 (20%) | 1.00 (40%) | 0.97 (33%) | 0.98 (33%) | 0.94 (67%) |
+| Sparse | strong | 1.01 (0%) | 0.86 (100%) | 0.76 (100%) | 1.05 (0%) | 0.92 (100%) | 0.90 (67%) |
+| Sparse | weak | 0.97 (40%) | 0.79 (100%) | 0.72 (100%) | 1.05 (33%) | 0.93 (100%) | 0.89 (100%) |
+| Mixed (case B) | strong | 0.95 (40%) | 0.79 (100%) | 0.70 (100%) | 1.04 (0%) | 0.93 (100%) | 0.85 (100%) |
+| Mixed (case B) | weak | 1.00 (20%) | 0.86 (100%) | 0.75 (100%) | 1.04 (33%) | 1.01 (0%) | 0.99 (33%) |
+| Case A (weak block factor) | strong | 0.92 (40%) | 0.79 (100%) | 0.78 (100%) | 1.05 (0%) | 0.94 (67%) | 0.94 (100%) |
+| Case A (weak block factor) | weak | 1.00 (0%) | 0.96 (40%) | 0.93 (60%) | 1.00 (33%) | 0.97 (67%) | 0.91 (100%) |
+
+**What the trial runs suggest**
+
+1. At tau = 0.25 and 0.50 the comparison has power: when specific indicators carry information and
+   factors are strong, FA-QR wins and the DM test detects it; no false rejections with strong factors.
+2. At tau = 0.10 there is little power, and under high persistence FA-QR is slightly worse than FO-QR
+   in 6 of 8 designs (coverage of FA-QR 11-16% against a nominal 10%). With about 108 estimation pairs
+   per window the 10% quantile is estimated too imprecisely.
+3. Weak factors are mistaken for specific information: in the dense world with weak factors, the DM
+   test favours FA-QR in 20-67% of replications. PCA leaves part of the weak common component in the
+   idiosyncratic residuals, and the lasso picks it up.
+4. Selection is noisy: of 5 true signals, about 4 (low persistence) or 2-3 (high persistence) are
+   selected per window at tau = 0.25 / 0.50, together with many false ones.
+
+**Design questions to discuss**
+
+- Use tau = 0.25 as the main lower-tail quantile and report tau = 0.10 as secondary, with its power?
+- Make r + 1 and r + 2 factors (and possibly another estimator of r) a required check before reading an
+  FA-QR gain as evidence of specific information?
+- Read selection frequencies only descriptively, and attribute gains to indicator groups by dropping groups?
+- Next step: a semi-synthetic Monte Carlo on the real Chinese panel (real predictors, simulated target
+  with residuals resampled from the real forecasting errors), including indicator groups so that the
+  "does financial information help" comparison is also checked.
+
+---
+
+# 中文说明
 
 本科毕业论文代码仓库。研究问题：预测中国工业增长的下行风险时，少数共同因子是否已经概括了大量宏观金融指标中的信息，还是个别指标另有增量。方法沿用 Yaping Wang 的因子增强稀疏分位数回归（FA-QR），在滚动窗口的伪样本外预测中与基准比较，并用蒙特卡洛模拟检验比较的可靠性。
 
