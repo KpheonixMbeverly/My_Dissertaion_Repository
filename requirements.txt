@@ -1,0 +1,6 @@
+# Works with the Anaconda base environment (Python 3.9 or newer); nothing extra to install.
+numpy>=1.20
+scipy>=1.6        # needs the HiGHS linear-programming solver
+pandas>=1.2
+joblib>=1.0       # parallel Monte Carlo (optional)
+pytest>=6         # unit tests (optional)

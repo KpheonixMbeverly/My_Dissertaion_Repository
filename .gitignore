@@ -1,0 +1,21 @@
+# --- data: licensed (CSMAR) or large; never commit raw or processed data ---
+data/raw/
+data/interim/
+data/processed/
+*.zip
+*.rar
+
+# --- generated results (can be re-created by the scripts) ---
+results/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- editors / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
