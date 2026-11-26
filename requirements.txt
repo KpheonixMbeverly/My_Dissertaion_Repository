@@ -1,6 +1,5 @@
-# Works with the Anaconda base environment (Python 3.9 or newer); nothing extra to install.
+# 70 城房价研究的分析代码依赖（Python 3.9 及以上）
+# 现有结果在 Python 3.13、numpy 2.5、scipy 1.18、pandas 3.0 下得到
 numpy>=1.20
-scipy>=1.6        # needs the HiGHS linear-programming solver
-pandas>=1.2
-joblib>=1.0       # parallel Monte Carlo (optional)
-pytest>=6         # unit tests (optional)
+scipy>=1.6        # 分位数回归用 scipy.optimize.linprog 的 HiGHS 求解器
+pandas>=1.2       # 读取 .dta 需要 pandas 自带的 read_stata

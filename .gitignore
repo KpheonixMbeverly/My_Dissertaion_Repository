@@ -1,21 +1,58 @@
-# --- data: licensed (CSMAR) or large; never commit raw or processed data ---
-data/raw/
-data/interim/
-data/processed/
+# ---------- 数据：CSMAR、Wind 等有使用许可，不上传 ----------
+data/
+raw/
 *.zip
 *.rar
+*.7z
+*.dta
+*.sav
+*.xlsx
+*.xls
+# 确需上传的小表，用 git add -f 单独加入
 
-# --- generated results (can be re-created by the scripts) ---
-results/
+# ---------- 文献、研报和课程材料：有版权，不上传 ----------
+*.pdf
+literature/
+ture D 文献/
+研报/
+*研报*
 
-# --- Python ---
+# ---------- Word 文稿（开题报告、论文草稿等）不进代码仓库 ----------
+*.docx
+*.doc
+~$*
+
+# ---------- Python ----------
 __pycache__/
 *.py[cod]
-.pytest_cache/
 .ipynb_checkpoints/
+.venv/
+venv/
+env/
+.conda/
+*.egg-info/
 
-# --- editors / OS ---
-.idea/
-.vscode/
+# ---------- 体积大或可再生成的中间文件 ----------
+*.pkl
+*.pickle
+*.parquet
+*.npy
+*.npz
+tmp/
+scratch/
+
+# ---------- 账号与本地设置 ----------
+.env
+.env.*
+*.key
+*.pem
+credentials*.json
+token*.json
+.claude/settings.local.json
+
+# ---------- 系统与编辑器 ----------
 .DS_Store
 Thumbs.db
+desktop.ini
+.idea/
+.vscode/

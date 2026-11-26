@@ -1,190 +1,157 @@
-# Is One Index Enough? Common Factors, Specific Indicators and Downside Risk to Growth in China
+# 对全国市场最敏感的城市跌得最深吗？
 
-Undergraduate dissertation code (University of Nottingham Ningbo China). The question: when forecasting
-downside risk to Chinese industrial growth, do a few common factors use all the information in a large
-monthly panel, or do specific indicators add to them? The estimator is the factor-augmented sparse
-quantile regression of Yaping Wang (FA-QR: PCA factors unpenalised, l1 penalty on the idiosyncratic
-components), compared out of sample with a factor-only model (FO-QR), a sparse-only l1 quantile
-regression (SO-QR), the historical quantile and AR-GARCH, in a 2x2 design (real + external indicators
-vs. adding Chinese financial indicators; factors only vs. factors + specific indicators).
+**2021–2026 年中国 70 城二手房下行中的敏感度与累计跌幅**
 
-**Status (2026-11-18).** Model code, rolling pseudo out-of-sample engine, evaluation (pinball loss,
-coverage, Diebold-Mariano) and a Monte Carlo study are written and tested (`python -m pytest`).
-The Chinese monthly panel is being assembled (CSMAR, PBoC, FRED); no results on real data yet.
+*Do the most market-sensitive cities fall furthest? Sensitivity and cumulative falls in China's 70-city resale housing downturn, 2021–2026*
 
-## Preliminary Monte Carlo results
+本仓库存放宁波诺丁汉大学经济学本科毕业论文（ECON3067，2026/27 学年）的代码、锁定的分析方案和结果。价格和城市数据受数据库许可限制，不在仓库内，见[数据](#数据)。
 
-> **Preliminary.** 3-5 replications per design on a generic data-generating process; persistence
-> values are guesses, not calibrated to Chinese data. These results are meant for discussing the
-> design, not for the dissertation. Details (in Chinese): `docs/montecarlo_preliminary.md`.
+> **进度（2026-11-26）**：第一至第三部分的正式检验已完成，附录 A（下跌期重划）也已完成。附录 B（机制）和附录 C（检验力与阳性对照）还没锁定，计划 12 月中旬锁定并运行，1 月中旬完成全部分析。
 
-**Set-up.** T = 260 months, p = 100 indicators, 3 factors, 120-month rolling window (about 140
-out-of-sample forecasts), h = 1, tau = 0.10 / 0.25 / 0.50. Inside each window: standardisation, PCA,
-number of factors by the eigenvalue ratio (r_max = 8), penalty by blocked time-series cross-validation
-with a 12-month gap. Target = own lag (High setting only) + factor part + idiosyncratic part + Student-t(3) noise whose
-scale depends on one idiosyncratic component (so it matters for the tails only).
-Worlds: *dense* (factors only), *sparse* (5 idiosyncratic components), *mixed* (both), *case A*
-(a factor loading on a block of 10 indicators, missed by PCA). Factor loadings scaled by p^((alpha-1)/2),
-strong alpha = 1, weak alpha = 0.6. Two persistence settings: *Low* (AR(1) of factors 0.5,
-idiosyncratic 0.3, target 0) and *High* (0.9, 0.8, 0.5; closer to year-on-year Chinese series).
+## 研究问题
 
-**FA-QR relative to FO-QR**: mean pinball-loss ratio (below 1 = FA-QR better), and in brackets the
-share of replications in which a one-sided DM test at 10% says FA-QR is better (power where FA-QR
-should win, false rejections in the dense worlds).
+到 2026 年 10 月，70 个大中城市的二手房价格全部低于 2021 年 7 月的水平。2021 年 8 月以来，86% 的城市-月份在下跌。70 城平均已连续下跌 63 个月，累计约 27 个对数点（约 −24%）；2014–15 年那轮只跌了 11 个月，约 −5%。
 
-| World | Factors | Low: τ=0.10 | Low: τ=0.25 | Low: τ=0.50 | High: τ=0.10 | High: τ=0.25 | High: τ=0.50 |
-|---|---|---|---|---|---|---|---|
-| Dense | strong | 1.01 (0%) | 1.01 (0%) | 1.00 (0%) | 1.04 (0%) | 1.01 (0%) | 1.00 (0%) |
-| Dense | weak | 0.99 (20%) | 1.00 (20%) | 1.00 (40%) | 0.97 (33%) | 0.98 (33%) | 0.94 (67%) |
-| Sparse | strong | 1.01 (0%) | 0.86 (100%) | 0.76 (100%) | 1.05 (0%) | 0.92 (100%) | 0.90 (67%) |
-| Sparse | weak | 0.97 (40%) | 0.79 (100%) | 0.72 (100%) | 1.05 (33%) | 0.93 (100%) | 0.89 (100%) |
-| Mixed (case B) | strong | 0.95 (40%) | 0.79 (100%) | 0.70 (100%) | 1.04 (0%) | 0.93 (100%) | 0.85 (100%) |
-| Mixed (case B) | weak | 1.00 (20%) | 0.86 (100%) | 0.75 (100%) | 1.04 (33%) | 1.01 (0%) | 0.99 (33%) |
-| Case A (weak block factor) | strong | 0.92 (40%) | 0.79 (100%) | 0.78 (100%) | 1.05 (0%) | 0.94 (67%) | 0.94 (100%) |
-| Case A (weak block factor) | weak | 1.00 (0%) | 0.96 (40%) | 0.93 (60%) | 1.00 (33%) | 0.97 (67%) | 0.91 (100%) |
+所有城市都在跌，值得问的是哪些城市跌得最多。衡量一个城市房价风险的常用指标，是它对全国市场的敏感度，相当于股票的 β。本研究的主问题是：**对全国市场最敏感的城市，是否就是累计跌得最深的城市？** 下面三个子问题都在这一轮下跌内部回答：
 
-**What the trial runs suggest**
+- **RQ1 一个全国冲击**：一个全国因子能解释多少城市涨跌？下跌有多持久？
+- **RQ2 敏感度与累计跌幅（主线）**：按敏感度和按累计跌幅给城市排序，结果是否一致？敏感度解释不了的那部分跌幅，与哪些下跌前的城市特征有关？
+- **RQ3 同时深跌**：在全国最弱的月份，城市一起深跌的频率是否超过普通相关性所隐含的程度？
 
-1. At tau = 0.25 and 0.50 the comparison has power: when specific indicators carry information and
-   factors are strong, FA-QR wins and the DM test detects it; no false rejections with strong factors.
-2. At tau = 0.10 there is little power, and under high persistence FA-QR is slightly worse than FO-QR
-   in 6 of 8 designs (coverage of FA-QR 11-16% against a nominal 10%). With about 108 estimation pairs
-   per window the 10% quantile is estimated too imprecisely.
-3. Weak factors are mistaken for specific information: in the dense world with weak factors, the DM
-   test favours FA-QR in 20-67% of replications. PCA leaves part of the weak common component in the
-   idiosyncratic residuals, and the lasso picks it up.
-4. Selection is noisy: of 5 true signals, about 4 (low persistence) or 2-3 (high persistence) are
-   selected per window at tau = 0.25 / 0.50, together with many false ones.
+研究是描述性和结构性的，不做因果识别。主样本是国家统计局的二手住宅价格指数，新建商品住宅指数作对照。
 
-**Design questions to discuss**
+## 模型
 
-- Use tau = 0.25 as the main lower-tail quantile and report tau = 0.10 as secondary, with its power?
-- Make r + 1 and r + 2 factors (and possibly another estimator of r) a required check before reading an
-  FA-QR gain as evidence of specific information?
-- Read selection frequencies only descriptively, and attribute gains to indicator groups by dropping groups?
-- Next step: a semi-synthetic Monte Carlo on the real Chinese panel (real predictors, simulated target
-  with residuals resampled from the real forecasting errors), including indicator groups so that the
-  "does financial information help" comparison is also checked.
+全文用同一个因子分解。f₋ᵢ,ₜ 是剔除城市 i 后其余 69 城的月度对数涨跌均值，Fᵢ = Σₜ f₋ᵢ,ₜ 是全国累计变动，T 是月数：
 
-## 蒙特卡洛初步结果（中文）
+- yᵢₜ = aᵢ + βᵢ f₋ᵢ,ₜ + eᵢₜ
+- Dᵢ = Σₜ yᵢₜ = Kᵢ + Aᵢ，其中 Kᵢ = β̂ᵢ Fᵢ，Aᵢ = Dᵢ − β̂ᵢ Fᵢ = T · âᵢ
 
-> **初步结果。** 每种设定只跑了 3 到 5 次重复，用的是通用的模拟数据，持续性参数是凭经验设定的，
-> 没有按中国数据校准。这些结果用于讨论研究设计，不用于论文。详细说明见 `docs/montecarlo_preliminary.md`。
+Kᵢ 是按敏感度折算的累计变动，Aᵢ 是相对市场基准的累计偏离，类似事件研究里的累计超额收益。Aᵢ = T · âᵢ 是恒等式，只用来说明哪些城市偏离了市场基准，不作为独立证据。
 
-**设定。** 样本 260 个月、100 个指标、3 个共同因子，120 个月滚动窗口（约 140 次样本外预测），
-预测期 h = 1，分位数 0.10、0.25、0.50。每个窗口内重新做标准化和主成分分析，因子个数用特征值比率法确定
-（上限 8 个），惩罚参数用带 12 个月隔离带的时间序列交叉验证选择。目标变量 = 自身滞后（仅高持续性设定）
-+ 因子部分 + 个别成分部分 + t(3) 厚尾误差；误差的尺度随某一个别成分变化，所以这个指标只影响尾部。
-四种"世界"：**纯稠密**（只有因子有信息）、**纯稀疏**（只有 5 个个别成分有信息）、**混合**（两者都有）、
-**情况 A**（一个只作用于 10 个指标的板块因子，主成分会漏掉它）。因子强度：强（alpha = 1）、弱（alpha = 0.6，
-载荷乘以 p 的 (alpha−1)/2 次方）。两种持续性：**低**（因子、个别成分、目标的自相关分别为 0.5、0.3、0），
-**高**（0.9、0.8、0.5，更接近中国的同比序列）。
+## 目前的结果
 
-**FA-QR 相对 FO-QR 的表现**：每格是平均分位数损失之比（小于 1 表示完整模型更好），括号里是单边 DM 检验
-（10% 水平）判定完整模型更好的重复占比。在完整模型应当胜出的世界里，这个比例是分辨力；在纯稠密世界里，是误报率。
+下表是二手房的结果，括号内为自助法 95% 区间。各数字在 `results/` 中的位置见 [results/README.md](results/README.md)。
 
-| 世界 | 因子强度 | 低持续 τ=0.10 | 低持续 τ=0.25 | 低持续 τ=0.50 | 高持续 τ=0.10 | 高持续 τ=0.25 | 高持续 τ=0.50 |
-|---|---|---|---|---|---|---|---|
-| 纯稠密 | 强 | 1.01 (0%) | 1.01 (0%) | 1.00 (0%) | 1.04 (0%) | 1.01 (0%) | 1.00 (0%) |
-| 纯稠密 | 弱 | 0.99 (20%) | 1.00 (20%) | 1.00 (40%) | 0.97 (33%) | 0.98 (33%) | 0.94 (67%) |
-| 纯稀疏 | 强 | 1.01 (0%) | 0.86 (100%) | 0.76 (100%) | 1.05 (0%) | 0.92 (100%) | 0.90 (67%) |
-| 纯稀疏 | 弱 | 0.97 (40%) | 0.79 (100%) | 0.72 (100%) | 1.05 (33%) | 0.93 (100%) | 0.89 (100%) |
-| 混合（情况 B） | 强 | 0.95 (40%) | 0.79 (100%) | 0.70 (100%) | 1.04 (0%) | 0.93 (100%) | 0.85 (100%) |
-| 混合（情况 B） | 弱 | 1.00 (20%) | 0.86 (100%) | 0.75 (100%) | 1.04 (33%) | 1.01 (0%) | 0.99 (33%) |
-| 情况 A（板块弱因子） | 强 | 0.92 (40%) | 0.79 (100%) | 0.78 (100%) | 1.05 (0%) | 0.94 (67%) | 0.94 (100%) |
-| 情况 A（板块弱因子） | 弱 | 1.00 (0%) | 0.96 (40%) | 0.93 (60%) | 1.00 (33%) | 0.97 (67%) | 0.91 (100%) |
-
-**初步发现**
-
-1. **25% 和 50% 分位数上，比较有分辨力。** 个别指标确实有信息、因子较强时，完整模型胜出，DM 检验能识别出来；
-   信息只在强因子里时没有误报。
-2. **10% 分位数上，分辨力很弱。** 高持续性下，8 种设定中有 6 种完整模型的损失略高于纯因子模型，
-   完整模型的覆盖率为 11% 到 16%（理想值 10%）。每个窗口只有约 108 个样本对，10% 分位数估计得太不精确。
-3. **弱因子会被误当成个别指标的信息。** 在"只有因子有信息、但因子较弱"的世界里，DM 检验在 20% 到 67%
-   的重复中判定完整模型更好。主成分没有把弱的共同成分提取干净，残留部分被 lasso 选了进来。
-4. **指标选择噪声很大。** 25% 和 50% 分位数上，5 个真实信号每个窗口平均选中约 4 个（低持续性）或 2 到 3 个
-   （高持续性），同时选进大量假信号。
-
-**待讨论的设计问题**
-
-- 是否以 0.25 作为主要的下尾分位数，把 0.10 作为补充报告，并说明其分辨力？
-- 是否把多取一两个因子（r+1、r+2，也可比较其他确定因子个数的方法）列为必做检验，通过之后才把完整模型的增益解读为个别指标的信息？
-- 是否只把选中频率作为描述，增益来源用删组检验在指标组的层面判断？
-- 下一步：用真实的中国面板做半模拟（预测指标用真实数据，目标变量按已知规则生成，误差从真实预测残差中重抽），
-  并加入指标分组，以同时检验"金融信息有没有用"这一比较。
-
----
-
-# 中文说明
-
-本科毕业论文代码仓库。研究问题：预测中国工业增长的下行风险时，少数共同因子是否已经概括了大量宏观金融指标中的信息，还是个别指标另有增量。方法沿用 Yaping Wang 的因子增强稀疏分位数回归（FA-QR），在滚动窗口的伪样本外预测中与基准比较，并用蒙特卡洛模拟检验比较的可靠性。
-
-## 目录结构
-
-```
-src/gar/            核心代码（可被所有脚本调用）
-  qr.py             分位数回归（线性规划求解）及 l1 惩罚、lambda_max
-  factors.py        标准化、主成分因子、特征值比率法选因子个数
-  tuning.py         时间序列交叉验证（验证段前留隔离带）选惩罚参数
-  garch.py          AR-GARCH(1,1) 基准（Brownlees and Souza, 2021）
-  models.py         HIST、AR-GARCH、FO-QR（纯因子）、SO-QR（纯稀疏）、FA-QR（因子+稀疏）
-  engine.py         滚动窗口伪样本外预测
-  evaluation.py     分位数损失、覆盖率、Diebold-Mariano 检验、汇总表
-  simulate.py       蒙特卡洛的数据生成：四种世界 × 强弱因子 × 尾部渠道
-scripts/
-  check_env.py      检查 Python 环境
-  00_smoke_test.py  在一套模拟数据上跑通全流程（约 1–3 分钟）
-  01_monte_carlo.py 蒙特卡洛研究（可断点续跑、可并行）
-tests/              单元测试（含"不偷看未来"的测试）
-data/               数据说明（数据本身不进仓库）
-results/            运行结果（不进仓库，可由脚本重新生成）
-docs/               研究设计、分析协议、蒙特卡洛初步结果
-```
-
-## 环境
-
-Anaconda 自带的 base 环境即可（Python 3.9 及以上，需要 numpy、scipy ≥ 1.6、pandas，蒙特卡洛并行需要 joblib）。**不要用为 CSMAR 接口建的 csmar36 环境**，那个版本太旧。
-
-```
-cd 仓库所在文件夹
-python scripts/check_env.py
-python -m pytest -q
-```
-
-## 运行
-
-```
-python scripts/00_smoke_test.py                       # 默认：mixed 世界，强因子
-python scripts/00_smoke_test.py --world caseA --alpha 0.6
-python scripts/01_monte_carlo.py --reps 2 --jobs 2    # 试跑
-python scripts/01_monte_carlo.py --reps 100 --jobs 4  # 正式（数小时；中断后重跑会跳过已完成的部分）
-python scripts/01_monte_carlo.py --summarise          # 汇总已有结果
-```
-
-## 主要约定
-
-- **直接 h 步预测**：用第 t 月的指标预测第 t+h 月的目标；估计窗口为截至预测时点的 120 个月，窗口内的标准化、主成分、因子个数和惩罚参数都只用窗口内数据。
-- **发布滞后在建面板时处理**：面板第 t 行只能包含第 t 月月底前已发布的信息，模型代码不再另行处理。
-- **信息集**：每个模型可用 `columns=[...]` 限定可用指标。2×2 设计中，A/B 用实体与外部指标，C/D 再加入中国金融指标；B/D 为 FA-QR，A/C 为 FO-QR。
-- **窗口内缺失的指标自动剔除**：晚起步的序列在数据完整之前不会进入该窗口。
-- **目标缺失（1 月）**：训练时跳过目标缺失的样本对，评分时跳过没有实现值的月份；自身滞后项用最近一次公布的值。
-
-## 尚待确定的设计选择（写进分析协议后再跑真实数据）
-
-| 选项 | 当前默认 | 说明 |
+| 问题 | 结果 | 结论的写法 |
 |---|---|---|
-| 交叉验证分位数 `cv_tau` | 在各自分位数上调参 | 10% 分位数样本薄，可改为在 0.5 上调参后通用 |
-| 隔离带 `gap` | 12 个月 | 同比增速前后 12 个月重叠 |
-| 重新调参频率 `retune_every` | 每 12 个预测时点 | 其余时点沿用相对惩罚强度 |
-| 因子个数 | 特征值比率法，上限 8 | 稳健性：r+1、r+2 |
-| DM 检验的长期方差滞后阶 | max(h−1, 1.5·T^(1/3)) | |
-| 2021 年基期效应 | 未处理 | 两年平均增速或剔除 2020–2022 |
+| RQ1 | 2021-08 至 2026-10，86% 的城市-月份在跌；70 城平均连跌 63 个月、约 −27 个对数点；此前两轮各跌 10、11 个月 | 典型事实，只作描述 |
+| RQ2 | 实力强的城市更敏感：ρ(S, β) = 0.62 [0.35, 0.74]，并通过了薄市场测量检验。但敏感度与累计跌幅的秩相关只有 ρ(D, β) = 0.13 [−0.42, 0.59]；2022-01 起跌幅最大的 17 城与 β 最高的 17 城只重合 4 个，随机期望约 4.2 | 没有证据表明敏感的城市就是跌得深的城市。区间较宽，不写“已证实不重合” |
+| RQ3 | 同时深跌超出高斯基准 +0.03 [−0.05, 0.11]；下尾减上尾 +0.09 [−0.09, 0.20]；分位数因子模型 QF1 +0.034 [−0.041, 0.109] | 没有超出相关性的同时深跌，写成上限（区间上端约 +0.11） |
+| 已撤回 | “这一轮比 2014–15 年更普遍”（H1）：按拐点划定下跌期后为 +0.025 [−0.087, 0.127] | 原来的 +0.33 来自日历年窗口错位，见附录 A |
 
-## 进度
+## 研究思路的演变
 
-- [x] 模型与评价代码、单元测试、冒烟测试
-- [x] 蒙特卡洛脚本；初步结果见 `docs/montecarlo_preliminary.md`
-- [ ] 数据整理脚本 → `data/processed/panel_monthly.csv`
-- [ ] 描述统计与分析协议
-- [ ] 真实数据样本外预测（2×2 设计 + AR-GARCH）
-- [ ] 按真实数据校准的第二轮蒙特卡洛
+| 时间 | 做了什么 | 为什么 |
+|---|---|---|
+| 2026-11 上中旬 | 尝试中国工业增加值、美国行业与通胀分项、美国州级经济的在险增长（分位数预测），以及州级与中国的货币政策传导 | 多数得到零结果或检验力不足：约 240 个月的样本上，τ = 0.10 的预测比较几乎没有检验力 |
+| 11-24 | 转向 70 城面板的截面维度，问这轮普遍下跌是各城一起深跌，还是共同下行趋势下各城风险仍然错开；写定并锁定第一至第三部分方案后运行 | 截面有 70 个城市，可以研究结构性事实，而不是做预测 |
+| 11-24 | 正式结果：没有超出相关性的同时深跌；下尾斜率的上升主要是尺度效应；强城市更敏感，但跌多深与此不重合 | “尾部特有”的说法基本被否定，分位数方法的角色从“发现尾部现象”变成“检验并排除尾部现象” |
+| 11-25 | 发现第一部分的下跌期按日历年划分，与实际拐点错位。按全国累计指数的拐点重划（附录 A），撤回“这一轮比上一轮更普遍” | 上一轮的 24 个月日历年窗口中，有 13 个月全国平均在上涨 |
+| 11-25—26 | 研究收窄为 2021-08 起的这一轮，跨轮比较降为描述；按机制倒推需要的数据，整理 Wind 数据 | 两轮下跌长度相差约六倍，每个方向只有一段时期，差异分不清来自涨跌方向还是时期特有的政策 |
+| 11-26 | 主线定为“敏感度与累计跌幅”，并按两份书面意见修订：Aᵢ 是会计恒等式，不作证据；机制只对累计跌幅检验并控制 β；尾部倾斜的检验改为本轮内的对称性检验 | 原题“全面下跌，但并不同步？”会预设答案：全国最弱的月份里，城市也落入自身最弱四分之一的比例约为 0.56，相互独立时只有 0.25 |
+| 下一步 | 附录 B（机制）、附录 C（检验力与阳性对照） | 12 月中旬锁定并运行 |
+
+## 研究流程
+
+- **先锁定，后运行**：每份分析方案在正式估计前写定，计算 SHA-256 并提交，然后才运行。锁定后的改动只追加在方案末尾的“偏离记录”里，锁定记录见 [docs/plan_locks.md](docs/plan_locks.md)。多数点估计在锁定前的探索中已经看过，所以称“分析方案锁定”，不称预注册。
+- **只研究一轮**：2011 年以来只有三轮下跌，跨轮比较只作描述。下跌期按全国累计指数的拐点划定。
+- **否定结论写成上限**：报告区间上端和最小可检测效应（2.5 × 自助标准误），并用阳性对照模拟说明检验力（附录 C）。
+- **推断**：时间维度用 6 个月块的循环块自助法（B = 999，分位数因子部分 B = 499）；城市截面用双向自助法，月份按块重抽，城市有放回重抽。
+
+| 方案 | 内容 | 状态 |
+|---|---|---|
+| 第一部分 | 广度、共同成分、同时深跌（H1–H4），新房对照（B1、B2） | 2026-11-24 锁定，已完成 |
+| 第二部分 | 城市异质性：薄市场闸门 M，H5–H9（敏感度、累计跌幅、下尾），ρ(D, β) | 2026-11-24 锁定，已完成 |
+| 第三部分 | 分位数因子模型（QF1–QF5） | 2026-11-24 锁定，已完成 |
+| 附录 A | 下跌期按拐点重划（2021-08 至 2026-10） | 2026-11-25 锁定，已完成 |
+| 附录 B | 机制：下跌前的估值与 β 的关系；下跌前的供给积压、人口增长与累计跌幅的关系（控制 β） | 待写 |
+| 附录 C | 阳性对照、本轮内的对称性检验、因子个数、尾部检验按 2021-08 窗口重算 | 待写 |
+
+## 仓库结构
+
+```
+.
+├── README.md
+├── requirements.txt
+├── scripts/          分析代码
+├── docs/             锁定的分析方案与锁定记录
+├── results/          各部分的输出（汇总表、自助抽样、日志）
+└── data_pipeline/    Wind 机制数据的清洗脚本
+```
+
+| 文件 | 内容 | 输出 |
+|---|---|---|
+| `scripts/hp_lib.py` | 读取 70 城面板；全国因子、共同成分份额、广度、同时超越概率与高斯基准；分位数回归（scipy 的 HiGHS 求解器）；循环块自助 | — |
+| `scripts/hp_run_main.py` | 第一部分 H1–H3、B1、B2，以及 7 种稳健性设定 | `results/hp_formal/results_main.csv` |
+| `scripts/hp_run_qr.py` | 逐城分位数回归与尺度效应外推（H4） | `results/hp_formal/qr_*.json` |
+| `scripts/hp_run_hetero.py` | 城市实力指数、薄市场闸门、H5–H9、ρ(D, β) | `results/hp_hetero/` |
+| `scripts/hp_run_qfm.py`、`scripts/qfm_lib.py` | 分位数因子模型 QF1–QF5 | `results/hp_qfm/` |
+| `scripts/hp_run_dating.py` | 拐点划定与附录 A 的检验 | `results/hp_dating/` |
+| `scripts/hp_run_hetero_p3alt.py` | 第二部分按 2021-08 起的窗口重算（点估计） | `results/hp_dating/sec_p3alt_*` |
+| `data_pipeline/build_wind_housing_20261125.py` | 清洗 Wind 导出的住宅用地、人口、成交、法拍、贷款数据 | 本地数据目录 |
+
+## 复现
+
+需要 Python 3.9 及以上。现有结果是在 Python 3.13、numpy 2.5、scipy 1.18、pandas 3.0 下得到的。
+
+```bash
+pip install -r requirements.txt
+```
+
+还需要两份本地数据（不在仓库内）：
+
+- `ZIP`：从 CSMAR 导出的 70 城住宅价格指数压缩包，内含 `CME_MResidSalesPriceIndices.csv`。脚本直接读压缩包。
+- `PANEL_DIR`：城市特征数据目录，只有第二部分用到。目录里需要有 `【stata文件】各城市面板数据合集 2000-2024年 200+指标合集.dta`、`整理结果/hpr_panel_70city_monthly.csv` 和 `整理结果/panel_35city_yearbook.csv`。
+
+在仓库根目录运行。`sec` 为二手房，`new` 为新房；自助法部分单个命令约需几分钟到十几分钟。
+
+```bash
+ZIP="/path/to/CME_MResidSalesPriceIndices_70城住宅价格指数_20261119.zip"
+PANEL_DIR="/path/to/中国房地产统计年鉴+面板数据"
+
+# 第一部分
+python scripts/hp_run_main.py "$ZIP" results/hp_formal/results_main.csv
+python scripts/hp_run_qr.py   "$ZIP" sec 299 results/hp_formal/qr_sec.json
+python scripts/hp_run_qr.py   "$ZIP" new 299 results/hp_formal/qr_new.json
+
+# 第二部分：先算点估计和逐城表，再跑自助法（输出文件名为 前缀_模式）
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" sec points  0   results/hp_hetero/sec
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" sec main    999 results/hp_hetero/sec
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" sec block3  499 results/hp_hetero/sec
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" sec block12 499 results/hp_hetero/sec
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" new points  0   results/hp_hetero/new
+python scripts/hp_run_hetero.py "$ZIP" "$PANEL_DIR" new main    999 results/hp_hetero/new
+
+# 第三部分
+python scripts/hp_run_qfm.py "$ZIP" sec points 0   results/hp_qfm/sec
+python scripts/hp_run_qfm.py "$ZIP" sec boot   499 results/hp_qfm/sec
+python scripts/hp_run_qfm.py "$ZIP" new points 0   results/hp_qfm/new
+python scripts/hp_run_qfm.py "$ZIP" new boot   499 results/hp_qfm/new
+
+# 附录 A
+python scripts/hp_run_dating.py "$ZIP" results/hp_dating
+python scripts/hp_run_hetero_p3alt.py "$ZIP" "$PANEL_DIR" sec results/hp_dating/sec_p3alt
+```
+
+随机种子写在脚本里（主要是 20261124 及其派生值）。用同样的脚本和命令重跑，应得到相同的结果；改动脚本中的计算顺序会改变随机数流，自助区间会有小幅差异。
+
+## 数据
+
+数据受 CSMAR 和 Wind 的使用许可限制。仓库只放代码和由代码生成的统计结果，不放原始数据。
+
+| 数据 | 原始机构 | 获取途径 | 用途 |
+|---|---|---|---|
+| 70 个大中城市住宅销售价格指数（新建商品住宅、二手住宅，月度环比，2011-01 至 2026-10） | 国家统计局 | CSMAR（`CME_MResidSalesPriceIndices`） | 主变量 |
+| 地级市经济社会指标（人均 GDP、人口、财政、信贷、房地产投资等，2000–2024） | 各地统计年鉴 | 汇编的地级市面板 | 城市实力指数 |
+| 35 城住宅销售面积等 | 《中国房地产统计年鉴》 | 作者整理的面板 | 薄市场闸门 M5 |
+| 70 城限购状态（2010-01 至 2026-10） | 各城市政府文件 | 作者整理编码，169 条事件附来源链接 | 实力指数中的限购强度 |
+| 住宅用地成交与供应、常住人口、二手房成交面积、法拍房、住户贷款 | 原始来源待逐项确认 | Wind 经济数据库 | 附录 B 的机制变量 |
+
+`data_pipeline/build_wind_housing_20261125.py` 按本地数据目录的结构编写：脚本放在 `data/scripts/` 下运行，读 `data/raw/wind/` 的原始导出，写到 `data/clean/wind_房地产_20261125/`。每一步清洗决定都记在输出目录的 `build_log.txt` 里。
+
+## 说明
+
+- 本仓库是本科论文的工作仓库，未附开源许可。代码和结果供评阅和复核使用。
+- 研究计划全文在单独的文档中维护，不在仓库内。
+- 2026-11-26 仓库按清空前保存的副本重建。三份结果报告根据结果文件重写，部分偏离记录据研究计划重录（标为“重录”），见 [docs/plan_locks.md](docs/plan_locks.md) 的“仓库重建说明”。
