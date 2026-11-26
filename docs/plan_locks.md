@@ -8,6 +8,7 @@
 | 第二部分：城市异质性（薄市场闸门 M、H5–H9） | `analysis_plan_hp_part2_hetero_20261124.md` | 2026-11-24 13:30 | `d8cc3f73203f860838de10c6ceef760803888d96c3f36a7550371722110d8800` |
 | 第三部分：分位数因子（QF1–QF5） | `analysis_plan_hp_part3_qfm_20261124.md` | 2026-11-24 14:27 | `426782a6e63475408a1b640d3023ef3c86d5af0d39a7ba213ba9d8b47e6aaa60` |
 | 附录 A：下跌期按拐点重划 | `analysis_plan_hp_part4a_dating_20261125.md` | 2026-11-25 10:07:30 | `06df109e79e382e7d9206f26073c9333a252376c07c5d297a7c145909d0a7d90` |
+| 第五部分：跨城持有的分散效果（H-P2 至 H-P6） | `analysis_plan_hp_part5_portfolio_20261127.md` | 2026-11-26 18:35:34 | `0fcd2687347df5e67835ec286301329637455157ec0bc49abb30a9de79910ad3` |
 
 核对方法（在仓库根目录运行）。第二、三部分去掉文末追加的“重录”行后，就是锁定原版：
 
@@ -15,6 +16,7 @@
 sed '/（重录）/d' docs/analysis_plan_hp_part2_hetero_20261124.md | sha256sum
 sed '/（重录）/d' docs/analysis_plan_hp_part3_qfm_20261124.md | sha256sum
 sha256sum docs/analysis_plan_hp_part4a_dating_20261125.md
+sha256sum docs/analysis_plan_hp_part5_portfolio_20261127.md
 ```
 
 待锁定：附录 B（机制）、附录 C（检验力与阳性对照），计划 2026 年 12 月中旬。
