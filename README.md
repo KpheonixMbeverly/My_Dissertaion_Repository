@@ -155,3 +155,9 @@ python scripts/hp_run_hetero_p3alt.py "$ZIP" "$PANEL_DIR" sec results/hp_dating/
 - 本仓库是本科论文的工作仓库，未附开源许可。代码和结果供评阅和复核使用。
 - 研究计划全文在单独的文档中维护，不在仓库内。
 - 2026-11-26 仓库按清空前保存的副本重建。三份结果报告根据结果文件重写，部分偏离记录据研究计划重录（标为“重录”），见 [docs/plan_locks.md](docs/plan_locks.md) 的“仓库重建说明”。
+
+## 文献地图与开题报告
+
+1. [文献地图：对市场最敏感的城市跌得最深吗？](research/literature-map.md)
+2. [开题报告（中文版）](research/proposal-zh.md)
+3. [Research Proposal（英文版）](research/proposal-en.md)
