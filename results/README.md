@@ -6,10 +6,11 @@
 - 第二部分（敏感度与累计跌幅）：[hp_hetero/report_hetero.md](hp_hetero/report_hetero.md)
 - 第三部分（分位数因子）：[hp_qfm/report_qfm.md](hp_qfm/report_qfm.md)
 - 附录 A（下跌期重划）：[hp_dating/report_dating.md](hp_dating/report_dating.md)
+- 第五部分（跨城组合）：[hp_portfolio/report_portfolio.md](hp_portfolio/report_portfolio.md)
 
 汇总表的列：`point` 是点估计，`se` 是自助标准误，`lo`、`hi` 是 95% 百分位区间，`mde` 是最小可检测效应（2.5 × se），`p_two` 是双侧自助 p 值，`B_eff` 是有效抽样次数。第一部分的 `results_main.csv` 没有 `mde` 和 `B_eff` 两列。
 
-市场前缀：`sec` 为二手房（主样本），`new` 为新建商品住宅（对照）。时期：P1 = 2011-01 至 2015-12，P2 = 2016-01 至 2021-12，P3 = 2022-01 至 2026-10；附录 A 的下跌期为 D1\* = 2014-05 至 2015-03，D2\* = 2021-08 至 2026-10。
+市场前缀：`sec` 为二手房（主样本），`new` 为新建商品住宅（对照）。时期：P1 = 2011-01 至 2015-12，P2 = 2016-01 至 2021-12，P3 = 2022-01 至 2026-10；附录 A 的下跌期为 D1\* = 2014-05 至 2015-03，D2\* = 2021-08 至 2026-10。第五部分的下行期 D = 2021-08 至 2026-10，上行期 U = 2015-04 至 2021-07，分位数回归用全样本 2011-02 至 2026-10。
 
 ## 第一部分：`hp_formal/`
 

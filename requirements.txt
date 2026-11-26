@@ -1,5 +1,6 @@
 # 70 城房价研究的分析代码依赖（Python 3.9 及以上）
-# 现有结果在 Python 3.13、numpy 2.5、scipy 1.18、pandas 3.0 下得到
+# 第一至第三部分和附录 A 的结果在 Python 3.13、numpy 2.5、scipy 1.18、pandas 3.0 下得到
+# 第五部分的结果在 Python 3.9.7、NumPy 1.20.3、SciPy 1.7.1、pandas 1.3.4 下得到
 numpy>=1.20
 scipy>=1.6        # 分位数回归用 scipy.optimize.linprog 的 HiGHS 求解器
 pandas>=1.2       # 读取 .dta 需要 pandas 自带的 read_stata
