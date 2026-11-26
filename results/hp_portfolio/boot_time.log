@@ -1,0 +1,49 @@
+2026-11-27 03:04:34,302 verified plan SHA-256 0fcd2687347df5e67835ec286301329637455157ec0bc49abb30a9de79910ad3
+2026-11-27 03:04:34,305 mode=boot_time smoke=False B=999 nport=10000 QR workers=8
+2026-11-27 03:04:34,306 metadata {"plan_sha256": "0fcd2687347df5e67835ec286301329637455157ec0bc49abb30a9de79910ad3", "versions": {"python": "3.9.7", "numpy": "1.20.3", "scipy": "1.7.1", "pandas": "1.3.4"}, "smoke": false, "nport": 10000, "seed": 20261127, "mode_seed_offsets": {"points": 0, "boot_city": 0, "boot_time": 1, "bench_qr": 0, "boot_qr": 0}, "zip_sha256": "463c93a45fe63454d8eb2677c661216b500157904a62d62865d079134ae0f624", "strength_csv_sha256": "56e09f2e80d4f0ed1e29ecb26ab05d9ff29ec47756a63f5220440bd343ee30bc", "source_sha256": {"hp_run_portfolio.py": "2330a86f07f09062b7be8de9a7d0256dbda0a4494d3854be38a7a62b09417e0d", "portfolio_lib.py": "00b1b65546155813e00a43c3a2fb2f0bebd4436cdd31e1e50a268e53d7cd0a3f", "hp_lib.py": "e863a7e4c47124a62b30e0a50bce430dffe7dfdae099c3e86b8234bb9c2f1645", "hp_run_hetero.py": "ce0b9130dcef7ef4e6a7df69b1a9461eca67553b981c35af71c5d220506ccdae"}}
+2026-11-27 03:04:34,386 data checks passed {"cities": 70, "regions": {"E": 28, "C": 16, "W": 18, "NE": 8}, "months": {"D": 63, "U": 76, "D_late": 58, "QR": 189, "pre": 127, "R6": 6}, "mean_D_log_change": -27.231198214012203, "max_D_citycode": 510100, "max_D_log_change": -4.836598451518799, "min_D_citycode": 130200, "min_D_log_change": -39.66791254736066, "strength_cities": 69, "strength_max_error": 3.219646771412954e-15, "factor_max_error": 8.881784197001252e-16}
+2026-11-27 03:04:34,386 input_checks 0.080 seconds
+2026-11-27 03:04:34,391 base_portfolios 0.005 seconds
+2026-11-27 03:04:34,520 random_inputs 0.123 seconds
+2026-11-27 03:04:35,077 boot_time 25/999 draws saved
+2026-11-27 03:04:35,648 boot_time 50/999 draws saved
+2026-11-27 03:04:36,206 boot_time 75/999 draws saved
+2026-11-27 03:04:36,748 boot_time 100/999 draws saved
+2026-11-27 03:04:37,309 boot_time 125/999 draws saved
+2026-11-27 03:04:37,837 boot_time 150/999 draws saved
+2026-11-27 03:04:38,371 boot_time 175/999 draws saved
+2026-11-27 03:04:38,914 boot_time 200/999 draws saved
+2026-11-27 03:04:39,435 boot_time 225/999 draws saved
+2026-11-27 03:04:39,952 boot_time 250/999 draws saved
+2026-11-27 03:04:40,480 boot_time 275/999 draws saved
+2026-11-27 03:04:41,023 boot_time 300/999 draws saved
+2026-11-27 03:04:41,552 boot_time 325/999 draws saved
+2026-11-27 03:04:42,084 boot_time 350/999 draws saved
+2026-11-27 03:04:42,613 boot_time 375/999 draws saved
+2026-11-27 03:04:43,144 boot_time 400/999 draws saved
+2026-11-27 03:04:43,678 boot_time 425/999 draws saved
+2026-11-27 03:04:44,223 boot_time 450/999 draws saved
+2026-11-27 03:04:44,762 boot_time 475/999 draws saved
+2026-11-27 03:04:45,324 boot_time 500/999 draws saved
+2026-11-27 03:04:45,880 boot_time 525/999 draws saved
+2026-11-27 03:04:46,447 boot_time 550/999 draws saved
+2026-11-27 03:04:47,014 boot_time 575/999 draws saved
+2026-11-27 03:04:47,571 boot_time 600/999 draws saved
+2026-11-27 03:04:48,120 boot_time 625/999 draws saved
+2026-11-27 03:04:48,683 boot_time 650/999 draws saved
+2026-11-27 03:04:49,259 boot_time 675/999 draws saved
+2026-11-27 03:04:49,835 boot_time 700/999 draws saved
+2026-11-27 03:04:50,411 boot_time 725/999 draws saved
+2026-11-27 03:04:50,997 boot_time 750/999 draws saved
+2026-11-27 03:04:51,567 boot_time 775/999 draws saved
+2026-11-27 03:04:52,136 boot_time 800/999 draws saved
+2026-11-27 03:04:52,706 boot_time 825/999 draws saved
+2026-11-27 03:04:53,286 boot_time 850/999 draws saved
+2026-11-27 03:04:53,860 boot_time 875/999 draws saved
+2026-11-27 03:04:54,451 boot_time 900/999 draws saved
+2026-11-27 03:04:55,058 boot_time 925/999 draws saved
+2026-11-27 03:04:55,636 boot_time 950/999 draws saved
+2026-11-27 03:04:56,221 boot_time 975/999 draws saved
+2026-11-27 03:04:56,776 boot_time 999/999 draws saved
+2026-11-27 03:04:56,778 calculate_draws 22.259 seconds
+2026-11-27 03:04:56,786 wall 22.484 seconds

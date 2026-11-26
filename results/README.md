@@ -60,3 +60,20 @@
 | `dating_desc.json` | 拐点、窗口，以及各轮的持续月数和累计跌幅 |
 | `dating_aligned_breadth.csv` | 两轮下跌按距高点月数对齐的下跌城市比例和平均环比 |
 | `sec_p3alt_points.json`、`sec_p3alt_cities.csv` | 第二部分按 2021-08 起的窗口重算的点估计和逐城表 |
+
+## 第五部分：`hp_portfolio/`
+
+| 文件 | 内容 |
+|---|---|
+| [report_portfolio.md](hp_portfolio/report_portfolio.md) | 累计跌幅、坏月份、H-P2 至 H-P6 和稳健性结果 |
+| `points.json`、`points.csv` | 主设定、前缀组合与稳健性点估计。JSON 同时保存验算、逐城描述和版本信息 |
+| `curves.csv` | 按持有城市数的一行一组统计量，含累计跌幅、坏月份及分位数回归描述 |
+| `portfolios_*.csv` | 每种组合抽取规格的城市代码清单，保留抽取顺序 |
+| `boot_city.csv`、`boot_time.csv`、`boot_qr.csv` | 城市自助和时间自助，分别为 B = 999、999、499 |
+| `bench_qr.csv` | 独立冲击基准（199 次） |
+| `*_draws.csv.gz`、`*.log` | 全部自助抽样、基准模拟和运行日志 |
+| [deviations_proposed.md](hp_portfolio/deviations_proposed.md) | 拟议偏离与实现约定 |
+
+`delta_cross_n10` 是最差一成组合累计跌幅的差。 `delta_time_n10` 是坏月份收益差。H-P2 闸门和主统计量是 `HP2_omega_bar` 和 `HP2_theta`。城市、时间和分位数回归的自助表另有 `n`、`window`，分别记录持有城市数（城市相关检验为样本城市数）与估计月份范围。
+
+在仓库根目录用 `python scripts/hp_run_portfolio.py ZIP MODE B results/hp_portfolio` 运行，`ZIP` 为本地 CSMAR 压缩包。依次运行 `points 0`、`boot_city 999`、`boot_time 999`、`bench_qr 199`、`boot_qr 499`。`HP_PORTFOLIO_WORKERS` 可设置分位数回归进程数。随机输入保存在本地忽略的 `tmp/` 目录。以相同代码、数据、软件版本和参数重启中断的自助模式会从最近保存的抽样继续。

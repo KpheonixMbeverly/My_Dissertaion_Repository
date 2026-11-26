@@ -1,0 +1,58 @@
+2026-11-27 03:01:59,358 verified plan SHA-256 0fcd2687347df5e67835ec286301329637455157ec0bc49abb30a9de79910ad3
+2026-11-27 03:01:59,362 mode=boot_city smoke=False B=999 nport=10000 QR workers=8
+2026-11-27 03:01:59,362 metadata {"plan_sha256": "0fcd2687347df5e67835ec286301329637455157ec0bc49abb30a9de79910ad3", "versions": {"python": "3.9.7", "numpy": "1.20.3", "scipy": "1.7.1", "pandas": "1.3.4"}, "smoke": false, "nport": 10000, "seed": 20261127, "mode_seed_offsets": {"points": 0, "boot_city": 0, "boot_time": 1, "bench_qr": 0, "boot_qr": 0}, "zip_sha256": "463c93a45fe63454d8eb2677c661216b500157904a62d62865d079134ae0f624", "strength_csv_sha256": "56e09f2e80d4f0ed1e29ecb26ab05d9ff29ec47756a63f5220440bd343ee30bc", "source_sha256": {"hp_run_portfolio.py": "2330a86f07f09062b7be8de9a7d0256dbda0a4494d3854be38a7a62b09417e0d", "portfolio_lib.py": "00b1b65546155813e00a43c3a2fb2f0bebd4436cdd31e1e50a268e53d7cd0a3f", "hp_lib.py": "e863a7e4c47124a62b30e0a50bce430dffe7dfdae099c3e86b8234bb9c2f1645", "hp_run_hetero.py": "ce0b9130dcef7ef4e6a7df69b1a9461eca67553b981c35af71c5d220506ccdae"}}
+2026-11-27 03:01:59,446 data checks passed {"cities": 70, "regions": {"E": 28, "C": 16, "W": 18, "NE": 8}, "months": {"D": 63, "U": 76, "D_late": 58, "QR": 189, "pre": 127, "R6": 6}, "mean_D_log_change": -27.231198214012203, "max_D_citycode": 510100, "max_D_log_change": -4.836598451518799, "min_D_citycode": 130200, "min_D_log_change": -39.66791254736066, "strength_cities": 69, "strength_max_error": 3.219646771412954e-15, "factor_max_error": 8.881784197001252e-16}
+2026-11-27 03:01:59,446 input_checks 0.083 seconds
+2026-11-27 03:01:59,451 base_portfolios 0.005 seconds
+2026-11-27 03:02:18,006 city bootstrap random inputs generated for 100/999 draws
+2026-11-27 03:02:37,426 city bootstrap random inputs generated for 200/999 draws
+2026-11-27 03:02:57,464 city bootstrap random inputs generated for 300/999 draws
+2026-11-27 03:03:17,371 city bootstrap random inputs generated for 400/999 draws
+2026-11-27 03:03:32,432 city bootstrap random inputs generated for 500/999 draws
+2026-11-27 03:03:44,081 city bootstrap random inputs generated for 600/999 draws
+2026-11-27 03:03:55,764 city bootstrap random inputs generated for 700/999 draws
+2026-11-27 03:04:07,464 city bootstrap random inputs generated for 800/999 draws
+2026-11-27 03:04:19,050 city bootstrap random inputs generated for 900/999 draws
+2026-11-27 03:04:31,128 random_inputs 151.675 seconds
+2026-11-27 03:04:31,155 boot_city 25/999 draws saved
+2026-11-27 03:04:31,181 boot_city 50/999 draws saved
+2026-11-27 03:04:31,206 boot_city 75/999 draws saved
+2026-11-27 03:04:31,236 boot_city 100/999 draws saved
+2026-11-27 03:04:31,263 boot_city 125/999 draws saved
+2026-11-27 03:04:31,292 boot_city 150/999 draws saved
+2026-11-27 03:04:31,321 boot_city 175/999 draws saved
+2026-11-27 03:04:31,350 boot_city 200/999 draws saved
+2026-11-27 03:04:31,380 boot_city 225/999 draws saved
+2026-11-27 03:04:31,410 boot_city 250/999 draws saved
+2026-11-27 03:04:31,438 boot_city 275/999 draws saved
+2026-11-27 03:04:31,470 boot_city 300/999 draws saved
+2026-11-27 03:04:31,501 boot_city 325/999 draws saved
+2026-11-27 03:04:31,534 boot_city 350/999 draws saved
+2026-11-27 03:04:31,567 boot_city 375/999 draws saved
+2026-11-27 03:04:31,599 boot_city 400/999 draws saved
+2026-11-27 03:04:31,632 boot_city 425/999 draws saved
+2026-11-27 03:04:31,666 boot_city 450/999 draws saved
+2026-11-27 03:04:31,701 boot_city 475/999 draws saved
+2026-11-27 03:04:31,736 boot_city 500/999 draws saved
+2026-11-27 03:04:31,774 boot_city 525/999 draws saved
+2026-11-27 03:04:31,810 boot_city 550/999 draws saved
+2026-11-27 03:04:31,847 boot_city 575/999 draws saved
+2026-11-27 03:04:31,886 boot_city 600/999 draws saved
+2026-11-27 03:04:31,926 boot_city 625/999 draws saved
+2026-11-27 03:04:31,963 boot_city 650/999 draws saved
+2026-11-27 03:04:32,003 boot_city 675/999 draws saved
+2026-11-27 03:04:32,045 boot_city 700/999 draws saved
+2026-11-27 03:04:32,085 boot_city 725/999 draws saved
+2026-11-27 03:04:32,127 boot_city 750/999 draws saved
+2026-11-27 03:04:32,169 boot_city 775/999 draws saved
+2026-11-27 03:04:32,212 boot_city 800/999 draws saved
+2026-11-27 03:04:32,256 boot_city 825/999 draws saved
+2026-11-27 03:04:32,300 boot_city 850/999 draws saved
+2026-11-27 03:04:32,347 boot_city 875/999 draws saved
+2026-11-27 03:04:32,391 boot_city 900/999 draws saved
+2026-11-27 03:04:32,435 boot_city 925/999 draws saved
+2026-11-27 03:04:32,479 boot_city 950/999 draws saved
+2026-11-27 03:04:32,524 boot_city 975/999 draws saved
+2026-11-27 03:04:32,569 boot_city 999/999 draws saved
+2026-11-27 03:04:32,571 calculate_draws 1.442 seconds
+2026-11-27 03:04:32,585 wall 153.226 seconds
