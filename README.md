@@ -252,4 +252,4 @@ python scripts/hp_run_portfolio.py "$ZIP" boot_qr   499 results/hp_portfolio
 
 - [Dissertation Proposal（英文正式稿，2026-11-27）](research/proposal-en.md)
 - [开题报告中文对照稿（2026-11-27，只供核对）](research/proposal-zh.md)
-- [文献地图](research/literature-map.md)：2026-11-26 版，按当时的主问题组织，待按新结构更新
+- [文献地图（2026-11-27）](research/literature-map.md)
